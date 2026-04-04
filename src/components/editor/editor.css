@@ -176,6 +176,14 @@
   height: 0;
 }
 
+/* Annotation overlay active indicator */
+.prose-editor-annotating {
+  outline: 2px dashed #34d399;
+  outline-offset: 4px;
+  border-radius: 12px;
+  user-select: none;
+}
+
 /* Drawing block placeholder */
 .notebook-drawing-block {
   border: 2px dashed #d1d5db;

@@ -32,7 +32,7 @@ export default function OnboardingTour() {
     if (!onboardingPending) return
 
     const timeout = setTimeout(() => {
-      const intro = introJs()
+      const intro = introJs.tour()
 
       intro.setOptions({
         steps,

@@ -10,6 +10,7 @@ export function useNotebookPage(pageId) {
   const { user } = useAuthStore()
   const [attachments, setAttachments] = useState([])
   const [drawings, setDrawings] = useState([])
+  const [overlayStrokes, setOverlayStrokes] = useState([])
   const [loading, setLoading] = useState(false)
 
   const fetchPage = useCallback(async () => {
@@ -20,7 +21,10 @@ export function useNotebookPage(pageId) {
       supabase.from('notebook_drawings').select('*').eq('page_id', pageId).order('created_at'),
     ])
 
-    if (pageRes.data) setActivePage(pageRes.data)
+    if (pageRes.data) {
+      setActivePage(pageRes.data)
+      setOverlayStrokes(pageRes.data.overlay_strokes || [])
+    }
     if (attRes.data) setAttachments(attRes.data)
     if (drawRes.data) setDrawings(drawRes.data)
     setLoading(false)
@@ -102,7 +106,7 @@ export function useNotebookPage(pageId) {
   // File uploads
   async function uploadAttachment(file) {
     const MAX_SIZE = 10 * 1024 * 1024
-    if (file.size > MAX_SIZE) return { error: 'Arquivo muito grande. O limite e 10 MB.' }
+    if (file.size > MAX_SIZE) return { error: 'Arquivo muito grande. O limite é 10 MB.' }
 
     const path = `${user.id}/${pageId}/${Date.now()}_${file.name}`
     const { error: uploadError } = await supabase.storage
@@ -149,6 +153,17 @@ export function useNotebookPage(pageId) {
     } catch { /* storage orphan acceptable */ }
   }
 
+  // Overlay strokes (annotation layer over editor)
+  async function saveOverlayStrokes(newStrokes) {
+    if (!pageId) return
+    setOverlayStrokes(newStrokes)
+    const { error } = await supabase
+      .from('notebook_pages')
+      .update({ overlay_strokes: newStrokes })
+      .eq('id', pageId)
+    return error?.message
+  }
+
   // Drawings
   async function createDrawing(title) {
     const { data, error } = await supabase
@@ -185,6 +200,7 @@ export function useNotebookPage(pageId) {
     page: activePage,
     attachments,
     drawings,
+    overlayStrokes,
     loading,
     createPage,
     updatePageTitle,
@@ -196,6 +212,7 @@ export function useNotebookPage(pageId) {
     createDrawing,
     saveDrawing,
     deleteDrawing,
+    saveOverlayStrokes,
     refetch: fetchPage,
   }
 }

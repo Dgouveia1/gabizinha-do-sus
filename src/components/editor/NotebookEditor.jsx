@@ -16,10 +16,11 @@ import { TextStyle } from '@tiptap/extension-text-style'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import EditorToolbar from './EditorToolbar'
+import DrawingOverlay from './DrawingOverlay'
 import { useAutoSave } from '@/hooks/useAutoSave'
 import './editor.css'
 
-export default function NotebookEditor({ content, onSave, onUploadImage, onInsertDrawing }) {
+export default function NotebookEditor({ content, onSave, onUploadImage, onInsertDrawing, annotating, onToggleAnnotation, overlayStrokes, onOverlayStrokesChange }) {
   const { debouncedSave, flush } = useAutoSave(onSave)
 
   const editor = useEditor({
@@ -72,8 +73,17 @@ export default function NotebookEditor({ content, onSave, onUploadImage, onInser
         editor={editor}
         onUploadImage={handleUploadImage}
         onInsertDrawing={onInsertDrawing}
+        annotating={annotating}
+        onToggleAnnotation={onToggleAnnotation}
       />
-      <EditorContent editor={editor} className="prose-editor" />
+      <div className={`relative ${annotating ? 'prose-editor-annotating' : ''}`}>
+        <EditorContent editor={editor} className="prose-editor" />
+        <DrawingOverlay
+          active={annotating}
+          strokes={overlayStrokes}
+          onStrokesChange={onOverlayStrokesChange}
+        />
+      </div>
     </div>
   )
 }

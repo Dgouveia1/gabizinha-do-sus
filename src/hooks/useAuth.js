@@ -16,7 +16,7 @@ export function useAuthInit() {
       if (!mounted) return
       setSession(session)
       if (session) {
-        await syncUserProfile(session.user.id)
+        await syncUserProfile(session.user)
       }
       setLoading(false)
     })
@@ -28,7 +28,7 @@ export function useAuthInit() {
         setSession(session)
 
         if (session) {
-          await syncUserProfile(session.user.id)
+          await syncUserProfile(session.user)
 
           // Trigger onboarding for brand-new users
           if (event === 'SIGNED_IN') {
@@ -56,16 +56,20 @@ export function useAuthInit() {
   }, [])
 }
 
-async function syncUserProfile(userId) {
+async function syncUserProfile(sessionUser) {
   const { data } = await supabase
     .from('users')
     .select('*')
-    .eq('id', userId)
+    .eq('id', sessionUser.id)
     .single()
 
-  if (data) {
-    useAuthStore.getState().setUser(data)
-  }
+  // Always set user — fall back to session info if profile row is missing
+  useAuthStore.getState().setUser(data || {
+    id: sessionUser.id,
+    email: sessionUser.email,
+    name: sessionUser.user_metadata?.full_name || sessionUser.email?.split('@')[0] || '',
+    avatar_url: sessionUser.user_metadata?.avatar_url || '',
+  })
 }
 
 export async function signInWithEmail(email, password) {

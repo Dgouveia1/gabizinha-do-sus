@@ -24,7 +24,7 @@ export default function NotebookCover({ onSelectPage, onCreateSubject }) {
     setRecents(getRecentPages())
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const firstName = user?.user_metadata?.full_name?.split(' ')[0]
+  const firstName = user?.name?.split(' ')[0]
     || user?.email?.split('@')[0]
     || 'Estudante'
 

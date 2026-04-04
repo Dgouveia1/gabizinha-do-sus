@@ -23,9 +23,9 @@ export default function NotebookPage() {
 
   const { subjects, loading, createSubject, deleteSubject } = useNotebook()
   const {
-    page, drawings, loading: pageLoading,
+    page, drawings, overlayStrokes, loading: pageLoading,
     updatePageTitle, saveContent, uploadAttachment,
-    createDrawing, saveDrawing, deleteDrawing,
+    createDrawing, saveDrawing, deleteDrawing, saveOverlayStrokes,
   } = useNotebookPage(pageId)
 
   const { saving, lastSavedAt, setSidebarOpen, tocOpen, setTocOpen } = useNotebookStore()
@@ -34,6 +34,7 @@ export default function NotebookPage() {
   const [showSubjectModal, setShowSubjectModal] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
   const [activeDrawing, setActiveDrawing] = useState(null)
+  const [annotating, setAnnotating] = useState(false)
 
   // Track recent pages whenever a page is loaded
   const trackedPageId = useRef(null)
@@ -79,6 +80,11 @@ export default function NotebookPage() {
     },
     [setSearchParams]
   )
+
+  // Reset annotation mode when switching pages
+  useEffect(() => {
+    setAnnotating(false)
+  }, [pageId])
 
   // Ctrl+K for search
   useEffect(() => {
@@ -184,6 +190,10 @@ export default function NotebookPage() {
                   const result = await createDrawing('Desenho')
                   if (result?.data) setActiveDrawing(result.data)
                 }}
+                annotating={annotating}
+                onToggleAnnotation={() => setAnnotating((v) => !v)}
+                overlayStrokes={overlayStrokes}
+                onOverlayStrokesChange={saveOverlayStrokes}
               />
 
               {/* Drawings list */}
