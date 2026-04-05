@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNotebookChapters } from '@/hooks/useNotebookChapters'
 import NotebookSidebarChapter from './NotebookSidebarChapter'
 import CreateChapterModal from './CreateChapterModal'
+import CreateSubjectModal from './CreateSubjectModal'
 import { cn } from '@/utils/cn'
 
 const colorMap = {
@@ -12,9 +13,10 @@ const colorMap = {
   sand: { bg: 'bg-sand-100', text: 'text-sand-500', dot: 'bg-sand-300' },
 }
 
-export default function NotebookSidebarSubject({ subject, onSelectPage, activePageId, onDelete }) {
+export default function NotebookSidebarSubject({ subject, onSelectPage, activePageId, onDelete, onEdit }) {
   const [open, setOpen] = useState(true)
   const [showChapterModal, setShowChapterModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
   const { chapters, createChapter, deleteChapter } = useNotebookChapters(subject.id)
 
   const colors = colorMap[subject.color] || colorMap.mint
@@ -70,6 +72,17 @@ export default function NotebookSidebarSubject({ subject, onSelectPage, activePa
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
           </button>
+          {onEdit && (
+            <button
+              onClick={() => setShowEditModal(true)}
+              className="p-1.5 rounded-lg hover:bg-sky-100 text-gray-400 hover:text-sky-500 transition-colors"
+              title="Editar matéria"
+            >
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+              </svg>
+            </button>
+          )}
           {onDelete && (
             <button
               onClick={() => onDelete(subject.id)}
@@ -112,6 +125,13 @@ export default function NotebookSidebarSubject({ subject, onSelectPage, activePa
         open={showChapterModal}
         onClose={() => setShowChapterModal(false)}
         onCreate={createChapter}
+      />
+
+      <CreateSubjectModal
+        open={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        onCreate={(payload) => onEdit(subject.id, payload)}
+        editData={subject}
       />
     </div>
   )

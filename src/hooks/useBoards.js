@@ -11,10 +11,12 @@ export function useBoards() {
   const [error, setError] = useState(null)
 
   const fetchBoards = useCallback(async () => {
+    if (!user?.id) return
     setLoading(true)
     const { data, error } = await supabase
       .from('boards')
       .select('*, board_members(role, user_id)')
+      .eq('owner_id', user.id)
       .order('semester', { ascending: true })
       .order('created_at', { ascending: false })
 

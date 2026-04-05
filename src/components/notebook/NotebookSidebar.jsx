@@ -67,7 +67,7 @@ function SemesterGroup({ semester, subjects, collapsedSemesters, onToggle, ...su
   )
 }
 
-export default function NotebookSidebar({ onSelectPage, activePageId, onCreateSubject, onDeleteSubject }) {
+export default function NotebookSidebar({ onSelectPage, activePageId, onCreateSubject, onDeleteSubject, onEditSubject }) {
   const { subjects, sidebarOpen, setSidebarOpen } = useNotebookStore()
   const [collapsedSemesters, setCollapsedSemesters] = useState(new Set())
 
@@ -155,6 +155,7 @@ export default function NotebookSidebar({ onSelectPage, activePageId, onCreateSu
                 onSelectPage={handleSelectPage}
                 activePageId={activePageId}
                 onDelete={onDeleteSubject}
+                onEdit={onEditSubject}
               />
             ))
           )}

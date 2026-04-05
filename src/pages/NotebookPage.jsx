@@ -21,7 +21,7 @@ export default function NotebookPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const pageId = searchParams.get('page')
 
-  const { subjects, loading, createSubject, deleteSubject } = useNotebook()
+  const { subjects, loading, createSubject, editSubject, deleteSubject } = useNotebook()
   const {
     page, drawings, overlayStrokes, loading: pageLoading,
     updatePageTitle, saveContent, uploadAttachment,
@@ -155,6 +155,7 @@ export default function NotebookPage() {
           activePageId={pageId}
           onCreateSubject={() => setShowSubjectModal(true)}
           onDeleteSubject={deleteSubject}
+          onEditSubject={editSubject}
         />
 
         <main className="flex-1 overflow-y-auto">
